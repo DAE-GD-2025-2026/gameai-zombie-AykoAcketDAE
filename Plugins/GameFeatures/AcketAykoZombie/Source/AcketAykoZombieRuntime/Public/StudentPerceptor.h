@@ -10,6 +10,8 @@
 #include "Perception/AISense_Damage.h"
 #include "Zombies/BaseZombie.h"
 #include "Village/House/House.h"
+#include "Items/BaseItem.h"
+#include "Common/InventoryComponent.h"
 #include "StudentPerceptor.generated.h"
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -25,15 +27,33 @@ public:
 
 	UFUNCTION()
 	virtual void OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
-
 	UFUNCTION(BlueprintCallable)
 	void MarkHouseVisited(AHouse* house);
+	UFUNCTION(BlueprintCallable)
+	bool AddItemToInventory(ABaseItem* item);
 private:
 	
 	UBlackboardComponent* GetBlackboardComp() const;
 	void CheckHouseLocation();
+	void CheckItemsAtLocation();
+	bool IsItemNeeded(int type,ABaseItem* item,bool pickUp);
 	
 	TArray<TObjectPtr<AHouse>> VisitedHouses;
 	TArray<TObjectPtr<AHouse>> SeenHouses;
+	
+	TArray<TObjectPtr<ABaseItem>> SeenItems;
+	TArray<TObjectPtr<ABaseItem>> IgnoredItems;
 	UBlackboardComponent* Blackboard;
+
+	
+	UInventoryComponent* Inventory;
+	//Items
+	TArray<std::pair<bool,int>> HasItem{
+		{false,0},
+		{false,0},
+		{false,0},
+		{false,0}
+		};
+	
+	
 };
