@@ -12,6 +12,9 @@
 #include "Village/House/House.h"
 #include "Items/BaseItem.h"
 #include "Common/InventoryComponent.h"
+#include "Common/HealthComponent.h"
+#include "Common/StaminaComponent.h"
+#include "Items/ItemType.h" 
 #include "StudentPerceptor.generated.h"
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -31,6 +34,10 @@ public:
 	void MarkHouseVisited(AHouse* house);
 	UFUNCTION(BlueprintCallable)
 	bool AddItemToInventory(ABaseItem* item);
+	UFUNCTION(BlueprintCallable)
+	bool UseItem(EItemType itemType);
+	UFUNCTION(BlueprintCallable)
+	void UpdateInventory();
 private:
 	
 	UBlackboardComponent* GetBlackboardComp() const;
@@ -43,10 +50,11 @@ private:
 	
 	TArray<TObjectPtr<ABaseItem>> SeenItems;
 	TArray<TObjectPtr<ABaseItem>> IgnoredItems;
-	UBlackboardComponent* Blackboard;
+	UBlackboardComponent* Blackboard{};
 
-	
-	UInventoryComponent* Inventory;
+	UHealthComponent* Health{};
+	UStaminaComponent* Stamina{};
+	UInventoryComponent* Inventory{};
 	//Items
 	TArray<std::pair<bool,int>> HasItem{
 		{false,0},
@@ -54,6 +62,6 @@ private:
 		{false,0},
 		{false,0}
 		};
-	
+	bool HasWeapon{false};
 	
 };

@@ -1,21 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BTT_PickUpItem.h"
-#include "Items/BaseItem.h"
+#include "BTT_UseItem.h"
+
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "StudentPerceptor.h"
 
 
-UBTT_PickUpItem::UBTT_PickUpItem()
+UBTT_UseItem::UBTT_UseItem()
 {
-	NodeName = "pick up item";
-	ItemKey.AddObjectFilter(this, GET_MEMBER_NAME_CHECKED(UBTT_PickUpItem, ItemKey),ABaseItem::StaticClass());
-	ItemKey.SelectedKeyName = TEXT("Item");
+	NodeName = "Use Item";
 }
 
-EBTNodeResult::Type UBTT_PickUpItem::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UBTT_UseItem::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	const AAIController* AIController = OwnerComp.GetAIOwner();
 	if (!AIController)
@@ -30,11 +28,9 @@ EBTNodeResult::Type UBTT_PickUpItem::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	if (!perceptor)
 		return EBTNodeResult::Failed;
 	
-	ABaseItem* value = Cast<ABaseItem>(Blackboard->GetValueAsObject(ItemKey.SelectedKeyName));
-	if (!value)
-		return EBTNodeResult::Failed;
-	
-	if (perceptor->AddItemToInventory(value))
+	if (Item == EItemType::Garbage) return EBTNodeResult::Failed;
+	if (perceptor->UseItem(Item))
 		return EBTNodeResult::Succeeded;
+	
 	return EBTNodeResult::Failed;
 }

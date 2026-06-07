@@ -14,6 +14,8 @@ namespace Keys
 	const FName ItemKey(TEXT("Item"));
 	const FName MoveToLocationKey(TEXT("MoveToLocation"));
 	const FName HasWeaponKey(TEXT("HasWeapon"));
+	const FName FeedKey(TEXT("Feed"));
+	const FName HealKey(TEXT("Heal"));
 }
 
 UStudentPerceptor::UStudentPerceptor()
@@ -38,7 +40,8 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 
 	Blackboard = GetBlackboardComp();
 	if (!Blackboard) return;
-
+	UpdateInventory();
+	
 	if (Actor->IsA(ABaseZombie::StaticClass()))
 	{
 		Blackboard->SetValueAsObject(Keys::EnemyKey, Actor);
@@ -85,7 +88,51 @@ bool UStudentPerceptor::AddItemToInventory(ABaseItem* item)
 	if (IsItemNeeded(static_cast<int>(item->GetItemType()),item,true))
 		return true;
 	CheckItemsAtLocation();
+	UpdateInventory();
 	return false;
+}
+
+bool UStudentPerceptor::UseItem(EItemType itemType)
+{
+	if (!Inventory) return false;
+	if (HasItem[static_cast<int>(itemType)].first)
+	{
+		Inventory->UseItem(static_cast<int>(itemType));
+		UpdateInventory();
+		return true;
+	}
+	return false;
+}
+
+void UStudentPerceptor::UpdateInventory()
+{
+	if (!Inventory) return;
+	for (int index{};index < Inventory->GetInventory().Num() - 1;++index)
+	{
+		if (!Inventory->GetInventory()[index]) continue;
+		HasItem[index].first =  Inventory->GetInventory()[index]->GetValue() != 0;
+		HasItem[index].second =  Inventory->GetInventory()[index]->GetValue();
+	}
+	if (HasItem[2].first || HasItem[3].first)
+	{
+		HasWeapon = true;
+		Blackboard->SetValueAsBool(Keys::HasWeaponKey, HasWeapon);
+	}
+	else
+	{
+		HasWeapon = false;
+		Blackboard->SetValueAsBool(Keys::HasWeaponKey, HasWeapon);
+	}
+	
+	Health = GetOwner()->FindComponentByClass<UHealthComponent>();
+	if (!Health) return;
+	if (Health->GetHealth() <= 5) Blackboard->SetValueAsBool(Keys::HealKey, true);
+	else Blackboard->SetValueAsBool(Keys::HealKey, false);
+	
+	Stamina = GetOwner()->FindComponentByClass<UStaminaComponent>();
+	if (!Stamina) return;
+	if (Stamina->GetCurrentStamina() <= 5) Blackboard->SetValueAsBool(Keys::FeedKey, true);
+	else Blackboard->SetValueAsBool(Keys::FeedKey, false);
 }
 
 UBlackboardComponent* UStudentPerceptor::GetBlackboardComp() const
@@ -135,10 +182,12 @@ void UStudentPerceptor::CheckItemsAtLocation()
 
 bool UStudentPerceptor::IsItemNeeded(int type, ABaseItem* item, bool pickUp)
 {
+	UpdateInventory();
 	if (!IsValid(item) || item->IsActorBeingDestroyed() || item->IsHidden())
 	{
 		SeenItems.Remove(item);
 		IgnoredItems.Remove(item);
+		UpdateInventory();
 		return false;
 	}
 	if (type == 4)
@@ -148,6 +197,7 @@ bool UStudentPerceptor::IsItemNeeded(int type, ABaseItem* item, bool pickUp)
 			Inventory->GrabItem(type,item);
 			Inventory->RemoveItem(type);
 			SeenItems.Remove(item);
+			UpdateInventory();
 		}
 		return true;
 	}
@@ -159,9 +209,11 @@ bool UStudentPerceptor::IsItemNeeded(int type, ABaseItem* item, bool pickUp)
 			Inventory->GrabItem(type,item);
 			SeenItems.Remove(item);
 			HasItem[type] = {true,item->GetValue()};
+			UpdateInventory();
 		}
 		return true;
 	}
 	IgnoredItems.Add(item);
+	UpdateInventory();
 	return false;
 }
