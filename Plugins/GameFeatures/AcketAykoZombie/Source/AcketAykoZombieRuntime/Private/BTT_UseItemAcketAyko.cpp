@@ -1,19 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BTT_UseItem.h"
+#include "BTT_UseItemAcketAyko.h"
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "StudentPerceptor.h"
+#include "StudentPerceptorAcketAyko.h"
 
 
-UBTT_UseItem::UBTT_UseItem()
+UBTT_UseItemAcketAyko::UBTT_UseItemAcketAyko()
 {
 	NodeName = "Use Item";
 }
 
-EBTNodeResult::Type UBTT_UseItem::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UBTT_UseItemAcketAyko::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	const AAIController* AIController = OwnerComp.GetAIOwner();
 	if (!AIController)
@@ -24,7 +24,7 @@ EBTNodeResult::Type UBTT_UseItem::ExecuteTask(UBehaviorTreeComponent& OwnerComp,
 	if (!ControlledPawn  || !Blackboard)
 		return EBTNodeResult::Failed;
 
-	UStudentPerceptor* perceptor = ControlledPawn->GetComponentByClass<UStudentPerceptor>();
+	UStudentPerceptorAcketAyko* perceptor = ControlledPawn->GetComponentByClass<UStudentPerceptorAcketAyko>();
 	if (!perceptor)
 		return EBTNodeResult::Failed;
 	

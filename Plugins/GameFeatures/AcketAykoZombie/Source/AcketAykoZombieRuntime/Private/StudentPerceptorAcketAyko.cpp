@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "StudentPerceptor.h"
+#include "StudentPerceptorAcketAyko.h"
 #include "AIController.h"
 #include <limits>
 #include "BehaviorTree/BlackboardComponent.h"
@@ -19,23 +19,23 @@ namespace Keys
 	const FName HealKey(TEXT("Heal"));
 }
 
-UStudentPerceptor::UStudentPerceptor()
+UStudentPerceptorAcketAyko::UStudentPerceptorAcketAyko()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UStudentPerceptor::BeginPlay()
+void UStudentPerceptorAcketAyko::BeginPlay()
 {
 	Super::BeginPlay();
 
 	
 	if (auto PerceptionComp = GetOwner()->GetComponentByClass<UAIPerceptionComponent>())
 	{
-		PerceptionComp->OnTargetPerceptionUpdated.AddDynamic(this, &UStudentPerceptor::OnPerceptionUpdated);
+		PerceptionComp->OnTargetPerceptionUpdated.AddDynamic(this, &UStudentPerceptorAcketAyko::OnPerceptionUpdated);
 	}
 }
 
-void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
+void UStudentPerceptorAcketAyko::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
 	GEngine->AddOnScreenDebugMessage(5, 5.f, FColor::Green, Actor->GetName());
 
@@ -68,7 +68,7 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 	CheckHouseLocation();
 }
 
-void UStudentPerceptor::MarkHouseVisited(AHouse* house)
+void UStudentPerceptorAcketAyko::MarkHouseVisited(AHouse* house)
 {
 	if (!house)return;
 	if (Blackboard->GetValueAsObject(Keys::HouseKey) == house)
@@ -81,7 +81,7 @@ void UStudentPerceptor::MarkHouseVisited(AHouse* house)
 	
 }
 
-bool UStudentPerceptor::AddItemToInventory(ABaseItem* item)
+bool UStudentPerceptorAcketAyko::AddItemToInventory(ABaseItem* item)
 {
 	Inventory = GetOwner()->FindComponentByClass<UInventoryComponent>();
 	if (!Inventory) return false;
@@ -94,7 +94,7 @@ bool UStudentPerceptor::AddItemToInventory(ABaseItem* item)
 	return false;
 }
 
-bool UStudentPerceptor::UseItem(EItemType itemType)
+bool UStudentPerceptorAcketAyko::UseItem(EItemType itemType)
 {
 	if (!Inventory) return false;
 	if (HasItem[static_cast<int>(itemType)].first)
@@ -106,7 +106,7 @@ bool UStudentPerceptor::UseItem(EItemType itemType)
 	return false;
 }
 
-void UStudentPerceptor::UpdateInventory()
+void UStudentPerceptorAcketAyko::UpdateInventory()
 {
 	if (!Inventory) return;
 	for (int index{};index < Inventory->GetInventory().Num() - 1;++index)
@@ -137,7 +137,7 @@ void UStudentPerceptor::UpdateInventory()
 	else Blackboard->SetValueAsBool(Keys::FeedKey, false);
 }
 
-bool UStudentPerceptor::AreKnownZombiesAlive()
+bool UStudentPerceptorAcketAyko::AreKnownZombiesAlive()
 {
 	TArray<ABaseZombie*> aliveZombies;
 	for (TObjectPtr<ABaseZombie> zombie: KnownZombies)
@@ -159,7 +159,7 @@ bool UStudentPerceptor::AreKnownZombiesAlive()
 	return true;
 }
 
-UBlackboardComponent* UStudentPerceptor::GetBlackboardComp() const
+UBlackboardComponent* UStudentPerceptorAcketAyko::GetBlackboardComp() const
 {
 	APawn* PawnOwner = Cast<APawn>(GetOwner());
 	if (!PawnOwner)
@@ -170,7 +170,7 @@ UBlackboardComponent* UStudentPerceptor::GetBlackboardComp() const
 	return AIController->GetBlackboardComponent();
 }
 
-void UStudentPerceptor::CheckHouseLocation()
+void UStudentPerceptorAcketAyko::CheckHouseLocation()
 {
 	std::pair<AHouse*,float> closestHouse{nullptr,std::numeric_limits<float>::max()};
 	for (auto house : SeenHouses)
@@ -189,7 +189,7 @@ void UStudentPerceptor::CheckHouseLocation()
 		Blackboard->ClearValue(Keys::HouseKey);
 }
 
-void UStudentPerceptor::CheckItemsAtLocation()
+void UStudentPerceptorAcketAyko::CheckItemsAtLocation()
 {
 	if (SeenItems.Num() == 0) return;
 	ABaseItem* top = SeenItems.Top();
@@ -204,7 +204,7 @@ void UStudentPerceptor::CheckItemsAtLocation()
 	Blackboard->SetValueAsObject(Keys::ItemKey, top);
 }
 
-bool UStudentPerceptor::IsItemNeeded(int type, ABaseItem* item, bool pickUp)
+bool UStudentPerceptorAcketAyko::IsItemNeeded(int type, ABaseItem* item, bool pickUp)
 {
 	UpdateInventory();
 	if (!IsValid(item) || item->IsActorBeingDestroyed() || item->IsHidden())

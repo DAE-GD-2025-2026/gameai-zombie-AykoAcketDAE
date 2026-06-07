@@ -4,19 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
-#include "BTS_ZombieCheck.generated.h"
+#include "BTS_UpdateInventoryAcketAyko.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ACKETAYKOZOMBIERUNTIME_API UBTS_ZombieCheck : public UBTService
+class ACKETAYKOZOMBIERUNTIME_API UBTS_UpdateInventoryAcketAyko : public UBTService
 {
 	GENERATED_BODY()
 public:
-	UBTS_ZombieCheck();
+	UBTS_UpdateInventoryAcketAyko();
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
-
-private:
-	
 };

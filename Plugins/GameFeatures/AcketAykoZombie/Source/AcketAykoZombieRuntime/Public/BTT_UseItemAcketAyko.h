@@ -5,17 +5,17 @@
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
 #include "Items/ItemType.h" 
-#include "BTT_UseItem.generated.h"
+#include "BTT_UseItemAcketAyko.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ACKETAYKOZOMBIERUNTIME_API UBTT_UseItem : public UBTTaskNode
+class ACKETAYKOZOMBIERUNTIME_API UBTT_UseItemAcketAyko : public UBTTaskNode
 {
 	GENERATED_BODY()
 public:
-	UBTT_UseItem();
+	UBTT_UseItemAcketAyko();
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 protected:
 	UPROPERTY(EditAnywhere)

@@ -1,23 +1,23 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BTT_Shoot.h"
+#include "BTT_ShootAcketAyko.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "StudentPerceptor.h"
+#include "StudentPerceptorAcketAyko.h"
 
 #include "Kismet/KismetMathLibrary.h"
 
-UBTT_Shoot::UBTT_Shoot()
+UBTT_ShootAcketAyko::UBTT_ShootAcketAyko()
 {
 	NodeName = "Shoot Enemy";
-	EnemyKey.AddObjectFilter(this, GET_MEMBER_NAME_CHECKED(UBTT_Shoot, EnemyKey),ABaseZombie::StaticClass());
+	EnemyKey.AddObjectFilter(this, GET_MEMBER_NAME_CHECKED(UBTT_ShootAcketAyko, EnemyKey),ABaseZombie::StaticClass());
 	EnemyKey.SelectedKeyName = TEXT("Enemy");
-	EnemyLocationKey.AddVectorFilter(this, GET_MEMBER_NAME_CHECKED(UBTT_Shoot, EnemyLocationKey));
+	EnemyLocationKey.AddVectorFilter(this, GET_MEMBER_NAME_CHECKED(UBTT_ShootAcketAyko, EnemyLocationKey));
 	EnemyLocationKey.SelectedKeyName = TEXT("EnemyLocation");
 }
 
-EBTNodeResult::Type UBTT_Shoot::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UBTT_ShootAcketAyko::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	const AAIController* AIController = OwnerComp.GetAIOwner();
 	if (!AIController)
@@ -28,7 +28,7 @@ EBTNodeResult::Type UBTT_Shoot::ExecuteTask(UBehaviorTreeComponent& OwnerComp, u
 	if (!ControlledPawn  || !Blackboard)
 		return EBTNodeResult::Failed;
 
-	UStudentPerceptor* perceptor = ControlledPawn->GetComponentByClass<UStudentPerceptor>();
+	UStudentPerceptorAcketAyko* perceptor = ControlledPawn->GetComponentByClass<UStudentPerceptorAcketAyko>();
 	if (!perceptor)
 		return EBTNodeResult::Failed;
 	
@@ -55,7 +55,7 @@ EBTNodeResult::Type UBTT_Shoot::ExecuteTask(UBehaviorTreeComponent& OwnerComp, u
 	return EBTNodeResult::Failed;
 }
 
-void UBTT_Shoot::FirePistol(ABaseZombie* zombie,APawn* player)
+void UBTT_ShootAcketAyko::FirePistol(ABaseZombie* zombie,APawn* player)
 {
 	FRotator faceEnemyRotation = UKismetMathLibrary::FindLookAtRotation(player->GetActorLocation(),zombie->GetActorLocation());
 	player->SetActorRotation(faceEnemyRotation);

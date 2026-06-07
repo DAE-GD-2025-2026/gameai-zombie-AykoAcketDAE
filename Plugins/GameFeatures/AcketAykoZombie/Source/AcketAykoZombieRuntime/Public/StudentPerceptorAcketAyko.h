@@ -15,16 +15,16 @@
 #include "Common/HealthComponent.h"
 #include "Common/StaminaComponent.h"
 #include "Items/ItemType.h" 
-#include "StudentPerceptor.generated.h"
+#include "StudentPerceptorAcketAyko.generated.h"
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class ACKETAYKOZOMBIERUNTIME_API UStudentPerceptor : public UActorComponent
+class ACKETAYKOZOMBIERUNTIME_API UStudentPerceptorAcketAyko : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this component's properties
-	UStudentPerceptor();
+	UStudentPerceptorAcketAyko();
 	
 	virtual void BeginPlay() override;
 
