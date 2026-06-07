@@ -38,6 +38,16 @@ public:
 	bool UseItem(EItemType itemType);
 	UFUNCTION(BlueprintCallable)
 	void UpdateInventory();
+	UFUNCTION(BlueprintCallable)
+	bool AreKnownZombiesAlive();
+
+	int GetWeaponType()
+	{
+		UpdateInventory();
+		if (HasItem[2].first) return 2;
+		if (HasItem[3].first) return 3;
+		return 0;
+	}
 private:
 	
 	UBlackboardComponent* GetBlackboardComp() const;
@@ -51,6 +61,8 @@ private:
 	TArray<TObjectPtr<ABaseItem>> SeenItems;
 	TArray<TObjectPtr<ABaseItem>> IgnoredItems;
 	UBlackboardComponent* Blackboard{};
+
+	TArray<TObjectPtr<ABaseZombie>> KnownZombies;
 
 	UHealthComponent* Health{};
 	UStaminaComponent* Stamina{};

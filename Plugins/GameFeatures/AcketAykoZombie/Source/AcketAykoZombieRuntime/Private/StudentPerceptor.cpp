@@ -10,6 +10,7 @@
 namespace Keys
 {
 	const FName EnemyKey(TEXT("Enemy"));
+	const FName EnemyLocationKey(TEXT("EnemyLocation"));
 	const FName HouseKey(TEXT("House"));
 	const FName ItemKey(TEXT("Item"));
 	const FName MoveToLocationKey(TEXT("MoveToLocation"));
@@ -44,6 +45,7 @@ void UStudentPerceptor::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 	
 	if (Actor->IsA(ABaseZombie::StaticClass()))
 	{
+		KnownZombies.Add(Cast<ABaseZombie>(Actor));
 		Blackboard->SetValueAsObject(Keys::EnemyKey, Actor);
 		return;
 	}
@@ -133,6 +135,28 @@ void UStudentPerceptor::UpdateInventory()
 	if (!Stamina) return;
 	if (Stamina->GetCurrentStamina() <= 5) Blackboard->SetValueAsBool(Keys::FeedKey, true);
 	else Blackboard->SetValueAsBool(Keys::FeedKey, false);
+}
+
+bool UStudentPerceptor::AreKnownZombiesAlive()
+{
+	TArray<ABaseZombie*> aliveZombies;
+	for (TObjectPtr<ABaseZombie> zombie: KnownZombies)
+	{
+		if (!IsValid(zombie) || !zombie || zombie->IsActorBeingDestroyed())
+			continue;
+		aliveZombies.Add(zombie.Get());
+	}
+	std::pair<ABaseZombie*,float> closestHouse{nullptr,std::numeric_limits<float>::max()};
+	for (auto zombie : aliveZombies)
+	{
+		float newHouseDistance = FVector::DistSquared(GetOwner()->GetActorLocation(),zombie->GetActorLocation());
+		if (newHouseDistance < closestHouse.second)
+			closestHouse = {zombie,newHouseDistance};
+	}
+	if (aliveZombies.Num() == 0) return false;
+	Blackboard->SetValueAsVector(Keys::EnemyLocationKey, closestHouse.first->GetActorLocation());
+	Blackboard->SetValueAsObject(Keys::EnemyKey, closestHouse.first);
+	return true;
 }
 
 UBlackboardComponent* UStudentPerceptor::GetBlackboardComp() const
